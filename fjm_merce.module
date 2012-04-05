@@ -1,0 +1,123 @@
+<?php
+function fjm_merce_menu() {
+  $items = array();
+  $items['home'] = array(
+    'title' => t('Home'),
+    'page callback' => 'fjm_merce_landing_page',  
+    'access arguments' => array('access content'),
+    'file' => 'fjm_merce_landing.page.inc',
+    'type' => MENU_NORMAL_ITEM,
+  );
+  return $items;
+}
+
+function fjm_merce_theme($existing, $type, $theme, $path) {
+  return array(
+    'fjm_merce_landing' => array(
+      'path' => drupal_get_path('module', 'fjm_merce') . '/templates',
+      'arguments' => array(
+        'menu' => NULL,
+        'carousel' => NULL,
+        'bio' => NULL,
+        'browse' => NULL,
+        'search_form' => NULL,
+      ),
+      'template' => 'fjm_merce_landing_page',
+    ),
+    'fjm_merce_bio' => array(
+      'arguments' => array(
+        'text' => NULL,
+      ),
+    ),
+    'fjm_merce_menu' => array(
+      'arguments' => array(
+        'menu_links' => NULL,
+      ),
+    ),
+    'fjm_merce_browse' => array(
+      'arguments' => array(
+        'photo_albums' => NULL,
+        'recordings' => NULL,
+        'press_clippings' => NULL,
+      ),
+    ),
+    'fjm_merce_audio' => array(
+      'path' => drupal_get_path('module', 'fjm_merce') . '/templates',
+        'arguments' => array(
+          'mods_data' => NULL,
+        ),
+        'template' => 'fjm_merce_audio_object',
+    ),
+    'fjm_merce_audio_mods' => array(
+      'arguments' => array(
+        'mods_data' => NULL,
+      ),
+    ),
+  );
+}
+
+/*
+// Not implemented yet
+function fjm_merce_required_fedora_objects() {
+  $module_path = drupal_get_path('module', 'fjm_merce');
+  
+  return array(
+    'fjm_merce' => array(
+      'module' => 'fjm_merce',
+      'title' => 'FJM Merce',
+      'objects' => array(
+        array(
+          'pid' => 'islandora:jpeg2000',
+          'label' => 'JPEG2000 Content Model',
+          'dsid' => 'ISLANDORACM',
+          'datastream_file' => "$module_path/xml/JP2CM.xml",
+          'cmodel' => 'fedora-system:ContentModel-3.0',
+        ),
+        array(
+          'pid' => 'cam:',
+          'label' => 'Coleccion Antonia Merce',
+          'cmodel' => 'islandora:collectionCModel',
+          'parent' => variable_get('fedora_repository_pid', 'islandora:root'),
+          'datastreams' => array(
+            array(
+              'dsid' => 'COLLECTION_POLICY',
+              'datastream_file' => "$module_path/xml/COLLECTION-POLICY.xml",
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+*/
+
+
+function theme_fjm_merce_bio($text) {
+  return $text;
+}
+
+function theme_fjm_merce_menu($menu_links) {
+  $menu = theme('links', $menu_links);
+  
+  return $menu;
+}
+
+function theme_fjm_merce_browse($photo_albums, $recordings, $press_clippings) {
+  $output = '<h2>' . t('Photo Albums') . '</h2>';
+  $output .= theme('links', $photo_albums);
+  $output .= '<h2>' . t('Recordings') . '</h2>';
+  $output .= theme('links', $recordings);
+  $output .= '<h2>' . t('Press Clippings') . '</h2>';
+  $output .= theme('links', $press_clippings);
+  
+  return $output;
+}
+
+function theme_fjm_merce_audio_mods($mods_data) {
+  $output = '<ul>';
+  foreach ($mods_data AS $mods) {
+    $output .= '<li>' . t($mods['title']) . '<br/>' . $mods['value'] . '</li>';
+  }
+  $output .= '</ul>';
+  return $output;
+}

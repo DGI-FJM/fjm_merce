@@ -1,0 +1,4 @@
+name = FJM Merce Customizations
+description = "Customization specific to Merce Collection"
+core = 6.x
+package = Fedora Repository
