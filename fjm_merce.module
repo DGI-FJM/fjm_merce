@@ -97,18 +97,24 @@ function theme_fjm_merce_bio($text) {
 }
 
 function theme_fjm_merce_menu($menu_links) {
-  $menu = theme('links', $menu_links);
+  $menu = theme('links', $menu_links, array('class' => 'fjm-merce-menu'));
   
   return $menu;
 }
 
 function theme_fjm_merce_browse($photo_albums, $recordings, $press_clippings) {
-  $output = '<h2>' . t('Photo Albums') . '</h2>';
-  $output .= theme('links', $photo_albums);
+  $output = '<div class="browse-links">';
+  $output .= '<h2>' . t('Photo Albums') . '</h2>';
+  $output .= theme('links', $photo_albums, array('class' => 'fjm-merce-photo-albums'));
+  $output .= '</div>';
+  $output .= '<div class="browse-links">';
   $output .= '<h2>' . t('Recordings') . '</h2>';
-  $output .= theme('links', $recordings);
-  $output .= '<h2>' . t('Press Clippings') . '</h2>';
-  $output .= theme('links', $press_clippings);
+  $output .= theme('links', $recordings, array('class' => 'fjm-merce-recordings'));
+  $output .= '</div>';
+  $output .= '<div class="browse-links last">';
+  $output .= '<h2 class="last">' . t('Press Clippings') . '</h2>';
+  $output .= theme('links', $press_clippings, array('class' => 'fjm-merce-press-clippings last'));
+  $output .= '</div>';
   
   return $output;
 }

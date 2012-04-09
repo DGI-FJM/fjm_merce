@@ -2,10 +2,11 @@
 
 function fjm_merce_landing_page() {
   $menu = _fjm_merce_landing_page_render_menu();
+  $carousel = _fjm_merce_landing_page_render_carousel();
   $search = drupal_get_form('islandora_extended_search_form');
   $bio = _fjm_merce_landing_page_render_bio();
   $browse = _fjm_merce_landing_page_render_browse();
-  return theme('fjm_merce_landing', $menu, 'carousel', $bio, $browse, $search);
+  return theme('fjm_merce_landing', $menu, $carousel, $bio, $browse, $search);
 }
 
 function _fjm_merce_landing_page_render_menu() {
@@ -14,7 +15,9 @@ function _fjm_merce_landing_page_render_menu() {
 }
 
 function _fjm_merce_landing_page_render_carousel() {
-  
+  $view_name = 'slideshow';
+  $display_id = 'block_1';
+  return views_embed_view($view_name, $display_id);
 }
 
 function _fjm_merce_landing_page_render_bio() {
