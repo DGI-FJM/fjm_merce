@@ -21,7 +21,19 @@ function _fjm_merce_landing_page_render_carousel() {
 }
 
 function _fjm_merce_landing_page_render_bio() {
-  $text = t('Biography text is here.');
+  $text = '<h2>' . t('Legado Antonia Mercé') . '<br />' . t('“La Argentina”.') . '</h2>';
+  $text .= '<p>' . t('Antonia Mercé Luque, “La Argentina” 
+nació en Buenos Aires en 1890. 
+Partiendo de la danza popular 
+española, de la que muchas otras 
+bailarinas  apenas lograron 
+despegarse, enlazó con la antiqua 
+escuela de bolero española y logró 
+una síntesis que no tuvo igual en su
+época. Artista verdaderamente
+international, tanto en Europa como 
+en América, estrenó numerosas.') . '</p>';
+    
   return theme('fjm_merce_bio', $text);
 }
 
