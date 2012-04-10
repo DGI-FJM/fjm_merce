@@ -56,8 +56,6 @@ function fjm_merce_theme($existing, $type, $theme, $path) {
   );
 }
 
-/*
-// Not implemented yet
 function fjm_merce_required_fedora_objects() {
   $module_path = drupal_get_path('module', 'fjm_merce');
   
@@ -67,21 +65,45 @@ function fjm_merce_required_fedora_objects() {
       'title' => 'FJM Merce',
       'objects' => array(
         array(
-          'pid' => 'islandora:jpeg2000',
-          'label' => 'JPEG2000 Content Model',
+          'pid' => 'cam:photoCModel',
+          'label' => 'Photo Content Model',
           'dsid' => 'ISLANDORACM',
-          'datastream_file' => "$module_path/xml/JP2CM.xml",
+          'datastream_file' => "$module_path/xml/PHOTOCM.xml",
           'cmodel' => 'fedora-system:ContentModel-3.0',
         ),
         array(
-          'pid' => 'cam:',
-          'label' => 'Coleccion Antonia Merce',
+          'pid' => 'cam:collectionRecordings',
+          'label' => 'Coleccion Antonia Merce Recordings',
           'cmodel' => 'islandora:collectionCModel',
           'parent' => variable_get('fedora_repository_pid', 'islandora:root'),
           'datastreams' => array(
             array(
               'dsid' => 'COLLECTION_POLICY',
-              'datastream_file' => "$module_path/xml/COLLECTION-POLICY.xml",
+              'datastream_file' => "$module_path/xml/recordings/COLLECTION-POLICY.xml",
+            ),
+          ),
+        ),
+        array(
+          'pid' => 'cam:collectionClippings',
+          'label' => 'Coleccion Antonia Merce Clippings',
+          'cmodel' => 'islandora:collectionCModel',
+          'parent' => variable_get('fedora_repository_pid', 'islandora:root'),
+          'datastreams' => array(
+            array(
+              'dsid' => 'COLLECTION_POLICY',
+              'datastream_file' => "$module_path/xml/clippings/COLLECTION-POLICY.xml",
+            ),
+          ),
+        ),
+        array(
+          'pid' => 'cam:collectionAlbums',
+          'label' => 'Coleccion Antonia Merce Photo Albums',
+          'cmodel' => 'islandora:collectionCModel',
+          'parent' => variable_get('fedora_repository_pid', 'islandora:root'),
+          'datastreams' => array(
+            array(
+              'dsid' => 'COLLECTION_POLICY',
+              'datastream_file' => "$module_path/xml/albums/COLLECTION-POLICY.xml",
             ),
           ),
         ),
@@ -89,7 +111,6 @@ function fjm_merce_required_fedora_objects() {
     ),
   );
 }
-*/
 
 
 function theme_fjm_merce_bio($text) {

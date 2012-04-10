@@ -1,0 +1,9 @@
+<content_model name="photo" xmlns="http://www.islandora.ca" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.islandora.ca http://localhost/islandoracm.xsd">
+  <mimetypes>
+    <type>text/xml</type>
+  </mimetypes>
+  <datastreams>
+    <datastream dsid="DC"></datastream>
+    <datastream dsid="MODS"></datastream>
+  </datastreams>
+</content_model>
