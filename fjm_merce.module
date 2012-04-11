@@ -141,10 +141,12 @@ function theme_fjm_merce_browse($photo_albums, $recordings, $press_clippings) {
 }
 
 function theme_fjm_merce_audio_mods($mods_data) {
-  $output = '<ul>';
+  $items = array();
   foreach ($mods_data AS $mods) {
-    $output .= '<li>' . t($mods['title']) . '<br/>' . $mods['value'] . '</li>';
+    $items[] = '<label>' . t($mods['title']) . '</label><span>' . $mods['value'] . '</span>';
   }
-  $output .= '</ul>';
+  
+  $output = theme_item_list($items, NULL, 'ul', array('class' => 'metadata'));
+  
   return $output;
 }
