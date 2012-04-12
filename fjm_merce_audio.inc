@@ -23,7 +23,10 @@ class SWFAudioPlayer {
   function showMP3() {
     global $base_url;
     $swfURL = $base_url . '/fedora/repository/' . $this->pid . '/PROXY_MP3/MP3.mp3';
-    $swfImageURL = $base_url . '/fedora/repository/' . $this->pid . '/TN/tn.jpg';
+    $swfImageURL = $base_url . '/fedora/repository/' . $this->pid . '/IMG/img.jpg';
+    // skin config file
+/*     $swf_config = drupal_get_path('module', 'fjm_merce') . '/config/merce.xml'; */
+    $swf_config = $base_url . '/' . drupal_get_path('module', 'fjm_merce') . '/config/merce.zip';
 
     //PROXY_MP3 is the datastream id
     $path = drupal_get_path('module', 'Fedora_Repository');
@@ -37,14 +40,15 @@ class SWFAudioPlayer {
     // drupal_add_js("sites/all/libraries/swfobject/swfobject.js");
 
 // player bits
-
+// include if you want the controlbar to be displayed overlaying the background image.
+// , 'controlbar.position':'over'
     $js_string = <<<ENDJS
 
 var swfVersionStr = "10.0.0";
-var flashvars = { file:escape("$swfURL"),image:escape("$swfImageURL"),autostart:'FALSE' };
+var flashvars = { file:escape("$swfURL"),image:escape("$swfImageURL"),autostart:'FALSE', skin:escape("$swf_config") };
 var params = { allowfullscreen:'FALSE', allowscriptaccess:'FALSE' };
 var attributes = { id:'AudioViewer', name:'AudioViewer' };
-swfobject.embedSWF('/sites/all/libraries/mediaplayer4/player.swf','flashContent','400','200','9.0.115','FALSE',flashvars, params, attributes);
+swfobject.embedSWF('/sites/all/libraries/mediaplayer4/player.swf','flashContent','650','500','9.0.115','FALSE',flashvars, params, attributes);
 swfobject.createCSS("#flashContent", "display:block;text-align:left;");
 ENDJS;
     drupal_add_js($js_string, 'inline', 'header');

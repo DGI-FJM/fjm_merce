@@ -14,7 +14,7 @@
           <div class="metadata-top">
             <?php print 'cordoba (collection obj title)'; ?>
           </div>
-          <?php print $mods_data; ?>  
+          <?php print $mods_data; ?>
         </div>
       </div>
     </div>
