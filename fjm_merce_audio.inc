@@ -61,15 +61,9 @@ ENDJS;
     module_load_include('inc', 'fedora_repository', 'ObjectHelper');
     $object_helper = new ObjectHelper();
     $mods_xml_file = $object_helper->getStream($this->pid, 'MODS');
-    $mods_xml = simplexml_load_string($mods_xml_file);
-    $mods_xml->registerXPathNamespace('mods', 'http://www.loc.gov/mods/v3');
 
-    $mods_fields = array();
-    $mods_fields[0]['title'] = 'test';
-    $mods_fields[0]['value'] = 'test value';
-    $mods_fields[1]['title'] = 'test 2';
-    $mods_fields[1]['value'] = 'test value 2';
+    $mods_fields = fjm_merce_render_mods($mods_xml_file);
 
-    return theme('fjm_merce_audio_mods', $mods_fields);
+    return theme('fjm_merce_mods', $mods_fields);
   }
 }

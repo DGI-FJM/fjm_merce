@@ -48,7 +48,7 @@ function fjm_merce_theme($existing, $type, $theme, $path) {
         ),
         'template' => 'fjm_merce_audio_object',
     ),
-    'fjm_merce_audio_mods' => array(
+    'fjm_merce_mods' => array(
       'arguments' => array(
         'mods_data' => NULL,
       ),
@@ -140,7 +140,7 @@ function theme_fjm_merce_browse($photo_albums, $recordings, $press_clippings) {
   return $output;
 }
 
-function theme_fjm_merce_audio_mods($mods_data) {
+function theme_fjm_merce_mods($mods_data) {
   $items = array();
   foreach ($mods_data AS $mods) {
     $items[] = '<label>' . t($mods['title']) . '</label><span>' . $mods['value'] . '</span>';
@@ -149,4 +149,38 @@ function theme_fjm_merce_audio_mods($mods_data) {
   $output = theme_item_list($items, NULL, 'ul', array('class' => 'metadata'));
   
   return $output;
+}
+
+function fjm_merce_render_mods($mods_xml_file) {
+  $mods_xml = simplexml_load_string($mods_xml_file);
+  $mods_xml->registerXPathNamespace('mods', 'http://www.loc.gov/mods/v3');
+
+  $mods_fields = array();
+
+  $date = $mods_xml->xpath('//mods:dateCreated[1]');
+  $authors = $mods_xml->xpath('//mods:name/mods:displayForm');
+  $topics = $mods_xml->xpath('//mods:subject/mods:topic');
+  $physical_description = $mods_xml->xpath('//mods:physicalDescription/mods:note');
+  $notes = $mods_xml->xpath('mods:note');
+
+  $count = 0;
+
+  $mods_fields = _fjm_merce_merge_mods($mods_fields, 'Date', $date, $count);
+  $mods_fields = _fjm_merce_merge_mods($mods_fields, 'Author', $authors, $count);
+  $mods_fields = _fjm_merce_merge_mods($mods_fields, 'Topic', $topics, $count);
+  $mods_fields = _fjm_merce_merge_mods($mods_fields, 'Physical Description', $physical_description, $count);
+  $mods_fields = _fjm_merce_merge_mods($mods_fields, 'General Note', $notes, $count);
+
+  return $mods_fields;
+}
+
+function _fjm_merce_merge_mods($mods_fields, $title, $values, &$count) {
+  if (($values)) {
+    foreach ($values AS $value) {
+      $mods_fields[$count]['title'] = t($title); // Needs proper translation
+      $mods_fields[$count]['value'] = (string) $value;
+      $count++;
+    }
+  }
+  return $mods_fields;
 }
