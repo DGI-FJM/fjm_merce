@@ -8,6 +8,19 @@ function fjm_merce_menu() {
     'file' => 'fjm_merce_landing.page.inc',
     'type' => MENU_NORMAL_ITEM,
   );
+  $items['bookviewer/img_url'] = array(
+    'title' => t('Image URL'),
+    'page callback' => 'fjm_merce_get_imgurl',
+    'access arguments' => array('access content'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+  $items['admin/settings/merce_solr'] = array(
+    'title' => t('Enable/Disable Solr Search Form'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('fjm_merce_solr_admin_form'),
+    'access arguments' => array('view detailed list of content'),
+    'type' => MENU_NORMAL_ITEM,
+  );
   return $items;
 }
 
@@ -156,7 +169,8 @@ function fjm_merce_render_mods($mods_xml_file) {
   $mods_xml->registerXPathNamespace('mods', 'http://www.loc.gov/mods/v3');
 
   $mods_fields = array();
-
+  
+  $title = $mods_xml->xpath('//mods:titleInfo/mods:title');
   $date = $mods_xml->xpath('//mods:dateCreated[1]');
   $authors = $mods_xml->xpath('//mods:name/mods:displayForm');
   $topics = $mods_xml->xpath('//mods:subject/mods:topic');
@@ -164,23 +178,107 @@ function fjm_merce_render_mods($mods_xml_file) {
   $notes = $mods_xml->xpath('mods:note');
 
   $count = 0;
-
-  $mods_fields = _fjm_merce_merge_mods($mods_fields, 'Date', $date, $count);
-  $mods_fields = _fjm_merce_merge_mods($mods_fields, 'Author', $authors, $count);
-  $mods_fields = _fjm_merce_merge_mods($mods_fields, 'Topic', $topics, $count);
+  
+  $mods_fields = _fjm_merce_merge_mods($mods_fields, 'Title', $title, $count);
+  $mods_fields = _fjm_merce_merge_mods($mods_fields, 'Date', $date, $count, 'mods_dateCreated_ms');
+  $mods_fields = _fjm_merce_merge_mods($mods_fields, 'Author', $authors, $count, 'mods_rname_creator_ms');
+  $mods_fields = _fjm_merce_merge_mods($mods_fields, 'Topic', $topics, $count, 'mods_subject_ms');
   $mods_fields = _fjm_merce_merge_mods($mods_fields, 'Physical Description', $physical_description, $count);
   $mods_fields = _fjm_merce_merge_mods($mods_fields, 'General Note', $notes, $count);
 
   return $mods_fields;
 }
 
-function _fjm_merce_merge_mods($mods_fields, $title, $values, &$count) {
+function _fjm_merce_merge_mods($mods_fields, $title, $values, &$count, $solr_field = '') {
   if (($values)) {
     foreach ($values AS $value) {
       $mods_fields[$count]['title'] = t($title); // Needs proper translation
-      $mods_fields[$count]['value'] = (string) $value;
+      if (empty($solr_field)) {
+        $mods_fields[$count]['value'] = (string) $value;
+      }
+      else {
+        $value = (string) $value;
+           // $searchString = $solr_field . ':' . $value;
+           // $url_value = htmlspecialchars(drupal_urlencode($searchString), ENT_QUOTES, 'utf-8', FALSE);
+           // $url_value = str_replace('/', '~slsh~', $url_value);
+          // $mods_fields[$count]['value'] = '<a href="' . '/merce/en/islandora/solr/search/' . $url_value . '/-' . '">' . $value . '</a>';
+        $mods_fields[$count]['value'] = $value;
+      }
       $count++;
     }
   }
   return $mods_fields;
+}
+
+function fjm_merce_solr_admin_form() {
+  $form = array();
+  $form['merce_solr_disable_submit'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Disable Solr Form Submit'),
+    '#default_value' => variable_get('merce_solr_disable_submit', '0'),
+    '#description' => t('If checked, the submit button for solr search will be disabled.'),
+  );
+  $form['merce_solr_disabled_alert'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Disabled Alert Message'),
+    '#size' => 15,
+    '#default_value' => variable_get('merce_solr_disabled_alert', ''),
+    '#description' => t('If the above box is checked, this message (will be translated if provided) will display in a javascript window when the search text input is clicked'),
+  );
+  $form['merce_solr_disable_form'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Disable Solr Form'),
+    '#default_value' => variable_get('merce_solr_disable_form', '0'),
+    '#description' => t('If checked, the solr form will be completely removed  from the landing/home page.'),
+  );
+  
+  return system_settings_form($form);
+}
+
+function fjm_merce_form_alter(&$form, $form_state, $form_id) {
+  if ($form_id == 'islandora_extended_search_form') {
+    $disable_submit = variable_get('merce_solr_disable_submit', '0');
+    if ($disable_submit) {
+      $form['controls']['submit']['#disabled'] = TRUE;
+      $alert = variable_get('merce_solr_disabled_alert', '');
+      if ($alert != '') {
+        $message = t($alert);
+        drupal_add_js('$("#islandora-extended-search-terms").click(function() { alert("' . $message . '");});', 'inline', 'footer');
+      }
+    }
+  }
+}
+
+function fjm_merce_get_photo_pids($pid) {
+  module_load_include('inc', 'fedora_repository', 'api/fedora_utils');
+  
+  $query = "select \$object from <#ri>
+    where \$object <fedora-rels-ext:isMemberOf> <info:fedora/" . $pid . ">";
+
+  $query = htmlentities(urlencode($query));
+  $content = '';
+    
+  $url = variable_get('fedora_repository_url', 'http://localhost:8080/fedora/risearch');
+  $url .= "?type=tuples&flush=TRUE&format=csv&limit=$limit&offset=$offset&lang=itql&stream=on&query=" . $query;
+  $content .= do_curl($url);
+  $results = explode("\n", $content);
+  return array_filter(preg_replace('/^info:fedora\/|"object"/', '', $results));
+}
+
+function fjm_merce_get_imgurl($pid) {
+  $img = 'http://digital.march.es:8080/adore-djatoka/resolver?url_ver=Z39.88-2004&rft_id=http://digital.march.es:8080/fedora/objects/' . $pid . 
+    '/datastreams/TIFF/content&svc_id=info:lanl-repo/svc/getRegion&svc_val_fmt=info:ofi/fmt:kev:mtx:jpeg2000&svc.format=image/jpeg&svc.level=5&svc.rotate=0';
+  
+  $handle = fopen($img, 'rb');
+  $contents = stream_get_contents($handle);
+  header('Content-type: image/jpeg');
+  print $contents;
+  fclose($handle);
+  die();
+  /*
+  $img_url = imagecache_external_generate_path($img, 'bookviewer');
+  $response['url'] = $img_url;
+  print drupal_json($response);
+  die();
+  */
 }

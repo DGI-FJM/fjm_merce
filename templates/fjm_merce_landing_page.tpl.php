@@ -19,11 +19,13 @@
 	      <?php print $browse; ?>
 	    </div>
 	  </div>
+          <?php if ($search_form != ''): ?>
 	  <div id="front-search-form">
-	    <h2 class="front-title"><?php print t('Search'); ?></h2>
+            <h2 class="front-title"><?php print t('Search'); ?></h2>
 	    <div id="front-search-wrapper">
 	      <?php print $search_form; ?>
 	    </div>
 	  </div>
+	<?php endif; ?>
 	</div>
 </div>

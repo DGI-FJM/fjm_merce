@@ -3,7 +3,13 @@
 function fjm_merce_landing_page() {
   $menu = _fjm_merce_landing_page_render_menu();
   $carousel = _fjm_merce_landing_page_render_carousel();
-  $search = drupal_get_form('islandora_extended_search_form');
+  $disable_search = variable_get('merce_solr_disable_form', '0');
+  if (!$disable_search) {
+    $search = drupal_get_form('islandora_extended_search_form');
+  } 
+  else {
+    $search = '';
+  }
   $bio = _fjm_merce_landing_page_render_bio();
   $browse = _fjm_merce_landing_page_render_browse();
   return theme('fjm_merce_landing', $menu, $carousel, $bio, $browse, $search);
@@ -22,17 +28,7 @@ function _fjm_merce_landing_page_render_carousel() {
 
 function _fjm_merce_landing_page_render_bio() {
   $text = '<h2>' . t('Legado Antonia Mercé') . '<br />' . t('“La Argentina”.') . '</h2>';
-  $text .= '<p>' . t('Antonia Mercé Luque, “La Argentina” 
-nació en Buenos Aires en 1890. 
-Partiendo de la danza popular 
-española, de la que muchas otras 
-bailarinas  apenas lograron 
-despegarse, enlazó con la antiqua 
-escuela de bolero española y logró 
-una síntesis que no tuvo igual en su
-época. Artista verdaderamente
-international, tanto en Europa como 
-en América, estrenó numerosas.') . '</p>';
+  $text .= '<p>' . t('“I serve a mute art and I look for complete expression through dance steps. My most assured vocabulary comes from the lines of my body and the expression on my face. I like to make myself understood in silence. I have learnt to live far from words.” (Antonia Mercé, 1890 – 1936).') . '</p>';
     
   return theme('fjm_merce_bio', $text);
 }
